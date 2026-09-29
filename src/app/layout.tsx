@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist_Mono, Lilita_One } from "next/font/google";
+import { Cursor } from "@/components/Cursor";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -30,7 +31,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${display.variable} ${sans.variable} ${mono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Cursor />
+      </body>
     </html>
   );
 }

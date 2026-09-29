@@ -1,6 +1,11 @@
 import Image, { type StaticImageData } from "next/image";
+import { ClotheslineDecor, FaqDecor, PoolEdgeDecor, SunburstDecor } from "@/components/Decor";
+import { Flipbook } from "@/components/Flipbook";
 import { Hero } from "@/components/Hero";
 import { OctoFace } from "@/components/OctoFace";
+import { PlayButton } from "@/components/PlayButton";
+import { SlipSpin } from "@/components/SlipSpin";
+import { WaterBackdrop } from "@/components/WaterBackdrop";
 import { site } from "@/lib/site";
 import sharkHood from "../../public/Untitled736_20260925042801.png";
 import topHat from "../../public/Untitled737_20260925050502.png";
@@ -63,14 +68,16 @@ export default function Home() {
   return (
     <>
       <Nav />
-      <main className="flex-1">
-        <Hero />
-        <Residents />
-        <Steps />
-        <Traits />
-        <Faq />
-      </main>
-      <Footer />
+      <Flipbook
+        pages={[
+          { id: "top", label: "The pool", node: <Hero /> },
+          { id: "residents", label: "Residents", node: <Residents /> },
+          { id: "how", label: "Move in", node: <Steps /> },
+          { id: "traits", label: "Traits", node: <Traits /> },
+          { id: "faq", label: "FAQ", node: <Faq /> },
+          { id: "open", label: "Pool's open", node: <Footer /> },
+        ]}
+      />
     </>
   );
 }
@@ -99,9 +106,7 @@ function Nav() {
           >
             <XIcon />
           </a>
-          <a href={site.links.waitlist} target="_blank" rel="noreferrer" className="btn btn-ink h-10 px-4 text-sm">
-            Join the list
-          </a>
+          <PlayButton className="h-10 px-4 text-sm" />
         </div>
       </nav>
     </header>
@@ -116,9 +121,12 @@ function XIcon() {
   );
 }
 
-function SectionHeading({ kicker, title, body }: { kicker: string; title: string; body?: string }) {
+// Every page fills the screen, clears the nav, and centres its content vertically.
+const page = "flex min-h-full items-center px-4 pt-24 pb-10 sm:px-6";
+
+function SectionHeading({ kicker, title, body, className = "mb-12" }: { kicker: string; title: string; body?: string; className?: string }) {
   return (
-    <div className="mb-12 max-w-xl">
+    <div className={`max-w-xl ${className}`}>
       <p className="font-mono text-[11px] tracking-[0.18em] text-coral-deep uppercase">{kicker}</p>
       <h2 className="mt-2 font-display text-5xl leading-none">{title}</h2>
       {body && <p className="mt-4 text-lg leading-relaxed text-ink/65">{body}</p>}
@@ -128,23 +136,26 @@ function SectionHeading({ kicker, title, body }: { kicker: string; title: string
 
 function Residents() {
   return (
-    <section id="residents" className="scroll-mt-24 px-4 py-24 sm:px-6 md:py-32">
-      <div className="mx-auto max-w-6xl">
+    <section className={`${page} relative isolate overflow-hidden`}>
+      <WaterBackdrop className="absolute inset-0 -z-10 h-full w-full" />
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-10 md:grid-cols-[1fr_1.4fr]">
         <SectionHeading
+          className=""
           kicker="the neighbors"
           title="Meet the residents"
-          body="Hand-drawn, one outline at a time. Same stare, very different life choices."
+          body="Hand-drawn, one outline at a time. Same stare, very different life choices. Give them a poke."
         />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {residents.map((r) => (
-            <article key={r.unit} className="group">
-              <div className="relative aspect-square overflow-hidden rounded-3xl bg-ink/5">
+        {/* a triangle: the first resident on top, everyone else below; sized so it fits one screen */}
+        <SlipSpin className="mx-auto grid w-full max-w-[min(100%,calc(100svh-17rem))] grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-6">
+          {residents.map((r, i) => (
+            <article key={r.unit} className={i === 0 ? "col-span-2 w-[calc(50%-0.5rem)] justify-self-center sm:w-[calc(50%-0.75rem)]" : ""}>
+              <div className="slip-tile relative aspect-square overflow-hidden rounded-3xl border-[3px] border-ink bg-cream shadow-[0_18px_40px_-18px_rgb(28_37_53/0.6)]">
                 <Image
                   src={r.image}
                   alt={`${r.name}, an Octohood resident`}
                   placeholder="blur"
-                  sizes="(min-width: 1024px) 370px, (min-width: 640px) 50vw, 100vw"
-                  className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  sizes="(min-width: 768px) 370px, 50vw"
+                  className="h-full w-full object-cover object-top"
                 />
                 <span className="glass absolute top-3 left-3 rounded-full px-2.5 py-0.5 font-mono text-[11px]">
                   {r.unit}
@@ -155,7 +166,7 @@ function Residents() {
           ))}
 
           <article>
-            <div className="relative grid aspect-square place-items-center rounded-3xl border border-dashed border-ink/25 bg-pool/25">
+            <div className="slip-tile relative grid aspect-square place-items-center overflow-hidden rounded-3xl border border-[3px] border-dashed border-ink/40 bg-cream/50 shadow-[0_18px_40px_-18px_rgb(28_37_53/0.6)]">
               <OctoFace skin="#2f93b8" shade="#1c2535" className="w-1/2" />
               <span className="absolute top-3 left-3 rounded-full border border-ink/15 bg-cream px-2.5 py-0.5 font-mono text-[11px]">
                 #????
@@ -163,7 +174,7 @@ function Residents() {
             </div>
             <ResidentMeta name="Vacancy" job="Could be you" mood="Watching your cursor" />
           </article>
-        </div>
+        </SlipSpin>
       </div>
     </section>
   );
@@ -171,11 +182,11 @@ function Residents() {
 
 function ResidentMeta({ name, job, mood }: { name: string; job: string; mood: string }) {
   return (
-    <div className="mt-4 flex items-baseline justify-between gap-4 px-1">
+    <div className="mt-3 flex flex-col gap-0.5 px-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
       <h3 className="font-display text-2xl">{name}</h3>
-      <p className="text-right text-sm text-ink/60">
+      <p className="text-sm text-ink/70 sm:text-right">
         {job}
-        <span className="block text-ink/40">{mood}</span>
+        <span className="block text-ink/50">{mood}</span>
       </p>
     </div>
   );
@@ -183,8 +194,9 @@ function ResidentMeta({ name, job, mood }: { name: string; job: string; mood: st
 
 function Steps() {
   return (
-    <section id="how" className="scroll-mt-24 border-t border-ink/10 px-4 py-24 sm:px-6 md:py-32">
-      <div className="mx-auto max-w-6xl">
+    <section className={`${page} relative isolate overflow-hidden`}>
+      <PoolEdgeDecor />
+      <div className="mx-auto w-full max-w-6xl">
         <SectionHeading kicker="the octopus way" title="How to move in" />
         <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
           {steps.map((s, i) => (
@@ -202,8 +214,9 @@ function Steps() {
 
 function Traits() {
   return (
-    <section id="traits" className="scroll-mt-24 px-4 sm:px-6">
-      <div className="mx-auto max-w-6xl rounded-[2rem] bg-navy px-6 py-16 text-cream sm:px-12 md:py-20">
+    <section className={`${page.replace("pt-24", "pt-44")} relative isolate overflow-hidden`}>
+      <ClotheslineDecor />
+      <div className="mx-auto w-full max-w-6xl rounded-[2rem] bg-navy px-6 py-16 text-cream sm:px-12 md:py-20">
         <div className="mb-10 max-w-xl">
           <p className="font-mono text-[11px] tracking-[0.18em] text-sand uppercase">sneak peek</p>
           <h2 className="mt-2 font-display text-5xl leading-none">What&apos;s in the wardrobe</h2>
@@ -228,8 +241,9 @@ function Traits() {
 
 function Faq() {
   return (
-    <section id="faq" className="scroll-mt-24 px-4 py-24 sm:px-6 md:py-32">
-      <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1fr_1.6fr]">
+    <section className={`${page} relative isolate overflow-hidden`}>
+      <FaqDecor />
+      <div className="mx-auto grid w-full max-w-6xl gap-12 md:grid-cols-[1fr_1.6fr]">
         <SectionHeading kicker="questions, asked lazily" title="FAQ" />
         <div className="border-b border-ink/10">
           {faqs.map((f) => (
@@ -251,15 +265,14 @@ function Faq() {
 
 function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-coral px-4 pt-20 text-white sm:px-6">
-      <div className="mx-auto flex max-w-6xl flex-col gap-10 md:flex-row md:items-end md:justify-between">
+    <footer className="relative isolate flex min-h-full flex-col overflow-hidden bg-coral px-4 pt-24 text-white sm:px-6">
+      <SunburstDecor />
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-end gap-10 md:flex-row md:items-center md:justify-between">
         <div className="pb-4">
           <p className="font-display text-5xl text-ink sm:text-6xl">Pool&apos;s open.</p>
           <p className="mt-3 max-w-sm text-lg text-white/90">Get on the list before the good chairs are gone.</p>
           <div className="mt-7 flex gap-2">
-            <a href={site.links.waitlist} target="_blank" rel="noreferrer" className="btn btn-ink">
-              Join the list
-            </a>
+            <PlayButton />
             <a href={site.links.x} target="_blank" rel="noreferrer" className="btn border border-white/40 hover:border-white">
               Follow on X
             </a>

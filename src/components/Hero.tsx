@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PlayButton } from "@/components/PlayButton";
 import { PoolScene } from "@/components/PoolScene";
 import { Typewriter } from "@/components/Typewriter";
 import { site } from "@/lib/site";
@@ -43,9 +44,7 @@ export function Hero() {
             A neighborhood of deeply unbothered octopuses. Eight arms, zero plans.
           </p>
           <div className="mt-5 flex gap-2">
-            <a href={site.links.waitlist} target="_blank" rel="noreferrer" className="btn btn-ink flex-1">
-              Join the list
-            </a>
+            <PlayButton className="flex-1" />
             <a href="#residents" className="btn btn-ghost flex-1">
               Residents
             </a>

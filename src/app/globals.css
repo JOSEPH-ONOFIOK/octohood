@@ -23,6 +23,7 @@
 
 html {
   scroll-behavior: smooth;
+  overscroll-behavior-x: none; /* stop trackpad swipes on the page stack from triggering back/forward */
 }
 
 body {
@@ -87,6 +88,50 @@ body::after {
     background: var(--color-coral);
     color: #fff;
   }
+  /* Chunky arcade button: glossy coral, ink outline, sits on a hard shadow and presses down into it. */
+  .btn-play {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(180deg, #ff715e 0%, var(--color-coral) 55%, var(--color-coral-deep) 100%);
+    border: 2px solid var(--color-ink);
+    box-shadow:
+      0 3px 0 var(--color-ink),
+      inset 0 2px 0 rgb(255 255 255 / 0.45);
+    text-shadow: 0 1px 0 rgb(23 19 15 / 0.3);
+    transition:
+      transform 160ms ease,
+      box-shadow 160ms ease;
+  }
+  .btn-play::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    background: linear-gradient(110deg, transparent 35%, rgb(255 255 255 / 0.5) 48%, transparent 60%);
+    transform: translateX(-110%);
+    animation: play-sheen 3.4s ease-in-out infinite;
+  }
+  .btn-play:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 5px 0 var(--color-ink),
+      inset 0 2px 0 rgb(255 255 255 / 0.45);
+  }
+  .btn-play:active {
+    transform: translateY(2px);
+    box-shadow:
+      0 1px 0 var(--color-ink),
+      inset 0 2px 0 rgb(255 255 255 / 0.3);
+  }
+  .btn-play .play-icon {
+    transition: transform 380ms cubic-bezier(0.3, 1.8, 0.5, 1);
+  }
+  .btn-play:hover .play-icon {
+    transform: rotate(-14deg) scale(1.18);
+  }
+
   .btn-ghost {
     border: 1px solid rgb(23 19 15 / 0.18);
     background: rgb(255 255 255 / 0.4);
@@ -136,6 +181,269 @@ body::after {
   }
   95% {
     transform: scaleY(0.08);
+  }
+}
+
+/* Arcade: crate rattles before it opens, the prize pops. */
+@keyframes crate-shake {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-7deg) translateY(-2px);
+  }
+  75% {
+    transform: rotate(7deg) translateY(-2px);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* The custom cursor draws its own; hide the system one while it's active. */
+html.custom-cursor,
+html.custom-cursor * {
+  cursor: none !important;
+}
+
+/* Homepage page stack: see Flipbook.tsx, which drives transform and --shade every frame. */
+.flip-page {
+  background: var(--color-cream);
+  will-change: transform;
+  box-shadow: 0 -24px 60px -24px rgb(15 26 36 / 0.45);
+}
+.flip-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #0f1a24;
+  opacity: calc(var(--shade, 0) * 0.5);
+}
+.flip-lip {
+  position: absolute;
+  bottom: calc(100% - 1px);
+  left: -5%;
+  width: 110%;
+  height: 56px;
+  pointer-events: none;
+  overflow: visible;
+}
+.flip-lip-side {
+  position: absolute;
+  top: -5%;
+  right: calc(100% - 1px);
+  display: none;
+  width: 56px;
+  height: 110%;
+  pointer-events: none;
+  overflow: visible;
+}
+.flip-lip-slosh {
+  animation: lip-slosh 2.4s ease-in-out infinite alternate;
+}
+.flip-lip-side .flip-lip-slosh {
+  animation-name: lip-slosh-side;
+}
+@keyframes lip-slosh {
+  to {
+    transform: translateX(-4%);
+  }
+}
+@keyframes lip-slosh-side {
+  to {
+    transform: translateY(-4%);
+  }
+}
+
+/* Large screens swap pages sideways (Flipbook.tsx WIDE): shadow and water line move to the left edge. */
+@media (min-width: 1024px) {
+  .flip-page {
+    box-shadow: -24px 0 60px -24px rgb(15 26 36 / 0.45);
+  }
+  .flip-lip {
+    display: none;
+  }
+  .flip-lip-side {
+    display: block;
+  }
+}
+
+@keyframes play-sheen {
+  0%,
+  55% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(110%);
+  }
+}
+
+/* Residents: the triangle slips out of your grip and wheels a full circle around its middle,
+   overshoots, wobbles back. Each card turns the opposite way at the same rate so it stays upright. */
+.slip-orbit {
+  position: relative;
+  z-index: 10;
+  transform-origin: 50% 58%; /* roughly the triangle's centroid */
+  animation: slip-orbit 1.5s cubic-bezier(0.45, 0, 0.2, 1);
+}
+.slip-orbit > * {
+  animation: slip-orbit-counter 1.5s cubic-bezier(0.45, 0, 0.2, 1);
+}
+.slip-orbit .slip-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.55) 48%, transparent 66%);
+  animation: slip-sheen 1.5s ease-out forwards;
+}
+
+@keyframes slip-orbit {
+  0% {
+    transform: rotate(0) scale(1);
+  }
+  14% {
+    transform: rotate(-16deg) scale(0.97);
+  }
+  62% {
+    transform: rotate(385deg) scale(1.03);
+  }
+  78% {
+    transform: rotate(352deg) scale(0.99);
+  }
+  90% {
+    transform: rotate(364deg);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes slip-orbit-counter {
+  0% {
+    transform: rotate(0);
+  }
+  14% {
+    transform: rotate(16deg);
+  }
+  62% {
+    transform: rotate(-385deg);
+  }
+  78% {
+    transform: rotate(-352deg);
+  }
+  90% {
+    transform: rotate(-364deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes slip-sheen {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Homepage background props (Decor.tsx). Tune per element with --d (duration) and --delay. */
+.decor-bob {
+  animation: decor-bob var(--d, 4s) ease-in-out var(--delay, 0s) infinite;
+}
+.decor-sway {
+  transform-origin: 50% 0;
+  animation: decor-sway var(--d, 3.4s) ease-in-out var(--delay, 0s) infinite;
+}
+.decor-sway-base {
+  transform-origin: 30% 100%;
+  animation: decor-sway-base 5s ease-in-out infinite;
+}
+.decor-drift {
+  animation: decor-drift var(--d, 10s) ease-in-out var(--delay, 0s) infinite;
+}
+.decor-spin {
+  animation: decor-spin 90s linear infinite;
+}
+.decor-twinkle {
+  animation: decor-twinkle 2.8s ease-in-out var(--delay, 0s) infinite;
+}
+.decor-rise {
+  animation: decor-rise var(--d, 9s) linear var(--delay, 0s) infinite;
+}
+.decor-slosh {
+  animation: lip-slosh 3s ease-in-out infinite alternate;
+}
+@keyframes decor-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r0, -5deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(var(--r1, 5deg));
+  }
+}
+@keyframes decor-sway {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(-6deg);
+  }
+  50% {
+    transform: translateX(-50%) rotate(6deg);
+  }
+}
+@keyframes decor-sway-base {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+@keyframes decor-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-10deg);
+  }
+  50% {
+    transform: translate(16px, -22px) rotate(8deg);
+  }
+}
+@keyframes decor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes decor-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.6) rotate(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+}
+@keyframes decor-rise {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-105svh) translateX(12px);
+    opacity: 0;
   }
 }
 
