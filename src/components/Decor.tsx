@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { ItemArt } from "@/components/play/ItemArt";
-import type { ItemId } from "@/lib/play/config";
+import type { ItemId } from "@/lib/items";
 
 // Background props for the homepage pages. Pure SVG + CSS animation (see the decor-* classes in
 // globals.css), all behind the content and ignored by pointers and screen readers.
@@ -38,7 +38,7 @@ export function PoolEdgeDecor() {
         </g>
       </svg>
 
-      <svg viewBox="-34 -34 68 68" className="decor-bob absolute bottom-[calc(26%-22px)] left-[7%] w-14 sm:w-20" style={vars({ "--d": "3.8s", "--delay": "-1.4s", "--r0": "8deg", "--r1": "-10deg" })}>
+      <svg viewBox="-34 -34 68 68" className="decor-bob absolute bottom-[calc(26%-22px)] left-[38%] w-14 sm:w-20" style={vars({ "--d": "3.8s", "--delay": "-1.4s", "--r0": "8deg", "--r1": "-10deg" })}>
         <g stroke="#17130f" strokeWidth="3" strokeLinejoin="round">
           <circle r="30" fill="#fbf6ee" />
           <path d="M0 -30 A30 30 0 0 1 26 15 L0 0 Z" fill="#e8503f" />

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { ItemId } from "@/lib/play/config";
+import type { ItemId } from "@/lib/items";
 
 // Little hand-drawn-ish props for the inventory, same ink outline as the residents.
 const ART: Record<ItemId, ReactNode> = {
@@ -64,9 +64,9 @@ const ART: Record<ItemId, ReactNode> = {
   ),
 };
 
-export function ItemArt({ id, className }: { id: ItemId; className?: string }) {
+export function ItemArt({ id, className, ...rest }: { id: ItemId; className?: string; "data-item"?: string }) {
   return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" className={className} aria-hidden {...rest}>
       <g stroke="#17130f" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
         {ART[id]}
       </g>

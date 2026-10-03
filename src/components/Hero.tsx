@@ -1,11 +1,13 @@
 import Image from "next/image";
+import Link from "next/link";
 import { PlayButton } from "@/components/PlayButton";
 import { PoolScene } from "@/components/PoolScene";
 import { Typewriter } from "@/components/Typewriter";
 import { site } from "@/lib/site";
 import poolScene from "../../public/Untitled707_20260925073040.png";
 
-export function Hero() {
+/** `residents` is how many have moved in so far, shown as a live chip linking to the board. */
+export function Hero({ residents }: { residents: number }) {
   const facts = [
     { label: "Supply", value: site.mint.supply },
     { label: "Chain", value: site.mint.chain },
@@ -30,9 +32,19 @@ export function Hero() {
 
       <div className="hero-copy flex h-full flex-col justify-end px-4 pb-6 sm:px-6 md:pb-12 lg:px-10">
         <div className="glass pointer-events-auto w-full max-w-[26rem] rounded-3xl p-6 sm:p-7">
-          <p className="font-mono text-[11px] tracking-[0.18em] text-ink/60 uppercase">
-            Drop 001 · hand-drawn
-          </p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-mono text-[11px] tracking-[0.18em] text-ink/60 uppercase">Drop 001 · hand-drawn</p>
+            <Link
+              href="/play#board"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-1 text-xs font-bold text-ink shadow-sm transition hover:bg-white"
+            >
+              <span className="relative flex h-2 w-2" aria-hidden>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#34c759] opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#34c759]" />
+              </span>
+              {residents ? `${residents.toLocaleString("en-US")} residents` : "Allowlist open"}
+            </Link>
+          </div>
           <h1 className="mt-2 font-display text-6xl leading-[0.9] sm:text-7xl">octohood</h1>
           <p className="mt-3 text-lg leading-snug">
             Nobody here is in a{" "}
@@ -45,9 +57,9 @@ export function Hero() {
           </p>
           <div className="mt-5 flex gap-2">
             <PlayButton className="flex-1" />
-            <a href="#residents" className="btn btn-ghost flex-1">
+            <Link href="/residents" className="btn btn-ghost flex-1">
               Residents
-            </a>
+            </Link>
           </div>
           <dl className="mt-6 grid grid-cols-4 border-t border-ink/10 pt-4">
             {facts.map((f, i) => (
@@ -59,16 +71,6 @@ export function Hero() {
           </dl>
         </div>
       </div>
-
-      <a
-        href="#residents"
-        aria-label="Scroll down"
-        className="scroll-hint absolute bottom-6 left-1/2 hidden -translate-x-1/2 md:block"
-      >
-        <span className="block h-10 w-6 rounded-full border-2 border-cream/90">
-          <span className="mx-auto mt-2 block h-2 w-1 animate-bounce rounded-full bg-cream" />
-        </span>
-      </a>
     </section>
   );
 }

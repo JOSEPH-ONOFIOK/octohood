@@ -17,13 +17,12 @@
 
 @theme inline {
   --font-display: var(--font-lilita);
-  --font-sans: var(--font-bricolage);
+  --font-sans: var(--font-nunito);
   --font-mono: var(--font-geist-mono);
 }
 
 html {
   scroll-behavior: smooth;
-  overscroll-behavior-x: none; /* stop trackpad swipes on the page stack from triggering back/forward */
 }
 
 body {
@@ -163,9 +162,6 @@ body::after {
   opacity: calc(1 - var(--p, 0) * 1.8);
   transform: translateY(calc(var(--p, 0) * -80px));
 }
-.hero-stage .scroll-hint {
-  opacity: calc(1 - var(--p, 0) * 6);
-}
 
 @keyframes caret {
   to {
@@ -198,6 +194,34 @@ body::after {
   }
 }
 
+/* Inner pages ease in on arrival. */
+.page-in {
+  animation: rise-in 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* /play: cards that appear mid-flow rise into place; confetti for a finished run. */
+@keyframes rise-in {
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+}
+
+.confetti-bit {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  animation: confetti-fall 2s cubic-bezier(0.2, 0.6, 0.4, 1) both;
+}
+@keyframes confetti-fall {
+  to {
+    transform: translateY(560px) rotate(var(--spin, 360deg));
+    opacity: 0;
+  }
+}
+
 @keyframes pop-in {
   from {
     transform: scale(0.6);
@@ -209,68 +233,6 @@ body::after {
 html.custom-cursor,
 html.custom-cursor * {
   cursor: none !important;
-}
-
-/* Homepage page stack: see Flipbook.tsx, which drives transform and --shade every frame. */
-.flip-page {
-  background: var(--color-cream);
-  will-change: transform;
-  box-shadow: 0 -24px 60px -24px rgb(15 26 36 / 0.45);
-}
-.flip-shade {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: #0f1a24;
-  opacity: calc(var(--shade, 0) * 0.5);
-}
-.flip-lip {
-  position: absolute;
-  bottom: calc(100% - 1px);
-  left: -5%;
-  width: 110%;
-  height: 56px;
-  pointer-events: none;
-  overflow: visible;
-}
-.flip-lip-side {
-  position: absolute;
-  top: -5%;
-  right: calc(100% - 1px);
-  display: none;
-  width: 56px;
-  height: 110%;
-  pointer-events: none;
-  overflow: visible;
-}
-.flip-lip-slosh {
-  animation: lip-slosh 2.4s ease-in-out infinite alternate;
-}
-.flip-lip-side .flip-lip-slosh {
-  animation-name: lip-slosh-side;
-}
-@keyframes lip-slosh {
-  to {
-    transform: translateX(-4%);
-  }
-}
-@keyframes lip-slosh-side {
-  to {
-    transform: translateY(-4%);
-  }
-}
-
-/* Large screens swap pages sideways (Flipbook.tsx WIDE): shadow and water line move to the left edge. */
-@media (min-width: 1024px) {
-  .flip-page {
-    box-shadow: -24px 0 60px -24px rgb(15 26 36 / 0.45);
-  }
-  .flip-lip {
-    display: none;
-  }
-  .flip-lip-side {
-    display: block;
-  }
 }
 
 @keyframes play-sheen {
@@ -379,7 +341,12 @@ html.custom-cursor * {
   animation: decor-rise var(--d, 9s) linear var(--delay, 0s) infinite;
 }
 .decor-slosh {
-  animation: lip-slosh 3s ease-in-out infinite alternate;
+  animation: decor-slosh 3s ease-in-out infinite alternate;
+}
+@keyframes decor-slosh {
+  to {
+    transform: translateX(-4%);
+  }
 }
 @keyframes decor-bob {
   0%,
